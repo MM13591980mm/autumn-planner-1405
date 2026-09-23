@@ -13,15 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Check planner
-        run: |
-          test -f index.html
-          echo "Planner is ready"
+      - name: Update data
+        run: python scripts/update.py
 
       - name: Save changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
-          git diff --cached --quiet || git commit -m "Automatic planner update"
+          git add data/events.json
+          git diff --cached --quiet || git commit -m "Update planner data"
           git push
