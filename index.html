@@ -1,105 +1,1069 @@
-async function updateInfo(){
-  const last = document.getElementById('last');
-  const state = document.getElementById('updateState');
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>تقویم تفریح سه‌نفره — پاییز ۱۴۰۵</title>
 
-  state.className = 'update-state';
-  state.textContent = 'در حال بررسی اطلاعات آنلاین…';
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#f5f7fb;
+  color:#222;
+  line-height:1.8
+}
+.hero{
+  background:linear-gradient(135deg,#263238,#455a64);
+  color:#fff;
+  padding:28px 20px;
+  text-align:center
+}
+.hero h1{
+  margin:0 0 8px;
+  font-size:28px
+}
+.hero p{
+  margin:0;
+  opacity:.9
+}
+.bar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  padding:15px;
+  background:#fff;
+  border-bottom:1px solid #ddd;
+  position:sticky;
+  top:0;
+  z-index:20
+}
+.btn{
+  border:0;
+  border-radius:8px;
+  padding:10px 16px;
+  cursor:pointer;
+  font-family:inherit
+}
+.btn.primary{
+  background:#1976d2;
+  color:#fff
+}
+.last{
+  font-size:13px;
+  color:#666
+}
+.update-state{
+  font-size:13px;
+  color:#555
+}
+.update-online{
+  color:#2e7d32
+}
+.update-error{
+  color:#c62828
+}
+.container{
+  max-width:1250px;
+  margin:auto;
+  padding:20px
+}
+.tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:20px
+}
+.tab{
+  border:1px solid #ccc;
+  background:#fff;
+  border-radius:8px;
+  padding:8px 14px;
+  cursor:pointer;
+  font-family:inherit
+}
+.tab.active{
+  background:#263238;
+  color:#fff
+}
+.section{
+  margin-bottom:30px
+}
+.section h2{
+  margin-top:0;
+  color:#263238
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px
+}
+.card{
+  background:#fff;
+  border-radius:12px;
+  padding:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.07);
+  border:1px solid #e4e7eb
+}
+.card h3{
+  margin:8px 0 12px;
+  font-size:19px
+}
+.card p{
+  margin:8px 0
+}
+.meta{
+  font-size:14px;
+  color:#555;
+  margin:4px 0
+}
+.desc{
+  font-size:14px;
+  color:#444
+}
+.kind{
+  display:inline-block;
+  padding:3px 8px;
+  border-radius:20px;
+  background:#eceff1;
+  font-size:12px
+}
+.source{
+  font-size:12px;
+  color:#777;
+  margin-top:10px;
+  border-top:1px solid #eee;
+  padding-top:8px
+}
+.actions{
+  margin-top:12px
+}
+.approve{
+  border:0;
+  border-radius:7px;
+  padding:7px 12px;
+  cursor:pointer;
+  background:#eee;
+  font-family:inherit
+}
+.approve.ok{
+  background:#c8e6c9;
+  color:#1b5e20
+}
+.travel{
+  border-right:5px solid #1976d2
+}
+.event{
+  border-right:5px solid #7b1fa2
+}
+.event.exhibition{
+  border-right-color:#ef6c00
+}
+.event.music{
+  border-right-color:#00897b
+}
+.event.theater{
+  border-right-color:#6a1b9a
+}
+.event.gallery{
+  border-right-color:#3949ab
+}
+.event.special{
+  border-right-color:#c62828
+}
+.small{
+  font-size:13px
+}
+.note{
+  background:#fff8e1;
+  border:1px solid #ffe082;
+  padding:14px;
+  border-radius:10px;
+  margin-bottom:20px
+}
+.route{
+  background:#e3f2fd;
+  border:1px solid #90caf9;
+  padding:14px;
+  border-radius:10px;
+  margin-top:15px
+}
+@media(max-width:700px){
+  .hero h1{font-size:22px}
+  .bar{position:static}
+  .container{padding:12px}
+  .grid{grid-template-columns:1fr}
+}
+</style>
+</head>
 
-  try {
-    const response = await fetch('./data/events.json?t=' + Date.now(), {
-      cache: 'no-store'
+<body>
+
+<header class="hero">
+<h1>تقویم تفریح سه‌نفره — پاییز ۱۴۰۵</h1>
+<p>سفرهای یک‌روزه و دو‌روزه با ماشین شخصی + رویدادهای منتخب تهران و اطراف</p>
+</header>
+
+<div class="bar">
+<button class="btn primary" onclick="updateInfo()">↻ به‌روزرسانی اطلاعات</button>
+<span id="last" class="last">آخرین به‌روزرسانی: ۳۱ شهریور ۱۴۰۵</span>
+<span id="updateState" class="update-state">اطلاعات رویدادهای پویا در به‌روزرسانی آنلاین بررسی می‌شوند.</span>
+</div>
+
+<div class="container">
+
+<div class="note">
+این برنامه برای سه نفر طراحی شده و ترکیبی از سفرهای کوتاه، طبیعت‌گردی، گردش شهری و رویدادهای فرهنگی و هنری پاییز ۱۴۰۵ است.
+</div>
+
+<div class="tabs">
+<button class="tab active" onclick="showMonth('mehr',this)">مهر</button>
+<button class="tab" onclick="showMonth('aban',this)">آبان</button>
+<button class="tab" onclick="showMonth('azar',this)">آذر</button>
+<button class="tab" onclick="showAll(this)">پاییز در یک نگاه</button>
+</div>
+
+<div id="content"></div>
+
+</div>
+
+<script>
+
+const travel={
+
+mehr:[
+{
+title:'طالقان',
+date:'هفته اول مهر',
+type:'سفر یک‌روزه',
+venue:'طالقان و اطراف',
+desc:'طبیعت‌گردی، رودخانه، روستاها و مسیرهای خوش‌منظره.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'ابیانه',
+date:'هفته دوم مهر',
+type:'سفر یک‌روزه',
+venue:'ابیانه',
+desc:'بازدید از بافت تاریخی و معماری روستایی.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'دماوند و لار',
+date:'هفته سوم مهر',
+type:'طبیعت‌گردی',
+venue:'دماوند و دشت لار',
+desc:'طبیعت پاییزی و مسیرهای مناسب رانندگی.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'فیروزکوه',
+date:'هفته چهارم مهر',
+type:'سفر یک‌روزه',
+venue:'فیروزکوه',
+desc:'جاده، طبیعت و توقف‌های کوتاه در مسیر.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+}
+],
+
+aban:[
+{
+title:'ماسال',
+date:'هفته اول آبان',
+type:'سفر دو‌روزه',
+venue:'ماسال',
+desc:'اقامت، طبیعت، ییلاقات و تجربه هوای پاییزی.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'قزوین',
+date:'هفته دوم آبان',
+type:'سفر یک‌روزه',
+venue:'قزوین',
+desc:'بازدید تاریخی و غذاهای محلی.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'کاشان',
+date:'هفته سوم آبان',
+type:'سفر یک‌روزه',
+venue:'کاشان',
+desc:'بافت تاریخی، خانه‌های سنتی و گردش شهری.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'رامسر',
+date:'هفته چهارم آبان',
+type:'سفر دو‌روزه',
+venue:'رامسر',
+desc:'ترکیب جنگل، دریا و اقامت کوتاه.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+}
+],
+
+azar:[
+{
+title:'سمنان و مهدی‌شهر',
+date:'هفته اول آذر',
+type:'سفر یک‌روزه',
+venue:'سمنان',
+desc:'گردش شهری و طبیعت اطراف.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'گرمسار',
+date:'هفته دوم آذر',
+type:'سفر یک‌روزه',
+venue:'گرمسار',
+desc:'مسیر کویری و تجربه متفاوت پاییزی.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'قمصر و نیاسر',
+date:'هفته سوم آذر',
+type:'سفر یک‌روزه',
+venue:'کاشان',
+desc:'بازدید از مناطق تاریخی و طبیعی اطراف کاشان.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+},
+{
+title:'کرج و جاده چالوس',
+date:'هفته چهارم آذر',
+type:'سفر یک‌روزه',
+venue:'البرز',
+desc:'رانندگی و طبیعت‌گردی در مسیر.',
+source:'برنامه پیشنهادی',
+status:'پیشنهادی'
+}
+]
+
+};
+const events={
+  mehr:{
+    'نمایشگاه‌ها':[
+      ['نمایشگاه هنرهای تجسمی','مهر ۱۴۰۵','نمایشگاه','تهران','نمایش آثار هنرمندان معاصر.','بررسی منبع آنلاین','پیشنهادی'],
+      ['نمایشگاه صنایع دستی','مهر ۱۴۰۵','نمایشگاه','تهران','صنایع دستی و آثار هنری.','بررسی منبع آنلاین','پیشنهادی']
+    ],
+    'موسیقی':[
+      ['کنسرت‌های منتخب مهر','مهر ۱۴۰۵','موسیقی','تهران','کنسرت‌های موسیقی در سالن‌های تهران؛ تاریخ دقیق باید آنلاین بررسی شود.','بررسی منبع آنلاین','نیازمند بررسی'],
+      ['اجرای موسیقی زنده','مهر ۱۴۰۵','موسیقی','تهران','برنامه‌های موسیقی زنده و اجراهای منتخب.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'تئاتر':[
+      ['نمایش‌های منتخب مهر','مهر ۱۴۰۵','تئاتر','تهران','نمایش‌های در حال اجرا در سالن‌های تهران.','بررسی منبع آنلاین','نیازمند بررسی'],
+      ['تئاترهای پیشنهادی','مهر ۱۴۰۵','تئاتر','تهران','برنامه‌های نمایشی پاییزی.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'گالری و هنرهای تجسمی':[
+      ['گالری‌های منتخب تهران','مهر ۱۴۰۵','گالری','تهران','نمایشگاه‌های هنری و گالری‌های منتخب.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'رویدادهای خاص':[
+      ['رویدادهای فرهنگی مهر','مهر ۱۴۰۵','رویداد','تهران','رویدادهای فرهنگی و شهری منتخب.','بررسی منبع آنلاین','نیازمند بررسی']
+    ]
+  },
+
+  aban:{
+    'نمایشگاه‌ها':[
+      ['نمایشگاه‌های آبان','آبان ۱۴۰۵','نمایشگاه','تهران','نمایشگاه‌های هنری و فرهنگی آبان.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'موسیقی':[
+      ['کنسرت‌های آبان','آبان ۱۴۰۵','موسیقی','تهران','کنسرت‌های منتخب آبان.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'تئاتر':[
+      ['نمایش‌های آبان','آبان ۱۴۰۵','تئاتر','تهران','نمایش‌های منتخب آبان.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'گالری و هنرهای تجسمی':[
+      ['گالری‌های آبان','آبان ۱۴۰۵','گالری','تهران','نمایشگاه‌های هنری آبان.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'رویدادهای خاص':[
+      ['رویدادهای فرهنگی آبان','آبان ۱۴۰۵','رویداد','تهران','رویدادهای فرهنگی و شهری آبان.','بررسی منبع آنلاین','نیازمند بررسی']
+    ]
+  },
+
+  azar:{
+    'نمایشگاه‌ها':[
+      ['نمایشگاه‌های آذر','آذر ۱۴۰۵','نمایشگاه','تهران','نمایشگاه‌های هنری و فرهنگی آذر.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'موسیقی':[
+      ['کنسرت‌های آذر','آذر ۱۴۰۵','موسیقی','تهران','کنسرت‌های منتخب آذر.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'تئاتر':[
+      ['نمایش‌های آذر','آذر ۱۴۰۵','تئاتر','تهران','نمایش‌های منتخب آذر.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'گالری و هنرهای تجسمی':[
+      ['گالری‌های آذر','آذر ۱۴۰۵','گالری','تهران','نمایشگاه‌های هنری آذر.','بررسی منبع آنلاین','نیازمند بررسی']
+    ],
+    'رویدادهای خاص':[
+      ['رویدادهای فرهنگی آذر','آذر ۱۴۰۵','رویداد','تهران','رویدادهای فرهنگی و شهری آذر.','بررسی منبع آنلاین','نیازمند بررسی']
+    ]
+  }
+};
+
+
+const travelExtra={
+  mehr:[
+    {
+      title:'لواسان و رودخانه جاجرود',
+      date:'مهر ۱۴۰۵',
+      type:'سفر یک‌روزه',
+      venue:'لواسان',
+      desc:'گزینه مناسب برای یک روز سبک در طبیعت نزدیک تهران.',
+      source:'برنامه پیشنهادی',
+      status:'پیشنهادی'
+    },
+    {
+      title:'کردان',
+      date:'مهر ۱۴۰۵',
+      type:'سفر یک‌روزه',
+      venue:'کردان',
+      desc:'طبیعت و استراحت کوتاه خارج از تهران.',
+      source:'برنامه پیشنهادی',
+      status:'پیشنهادی'
+    }
+  ],
+
+  aban:[
+    {
+      title:'رشت',
+      date:'آبان ۱۴۰۵',
+      type:'سفر دو‌روزه',
+      venue:'رشت',
+      desc:'غذا، بازار و فضای شهری شمال.',
+      source:'برنامه پیشنهادی',
+      status:'پیشنهادی'
+    },
+    {
+      title:'لاهیجان',
+      date:'آبان ۱۴۰۵',
+      type:'سفر دو‌روزه',
+      venue:'لاهیجان',
+      desc:'طبیعت، چای و گردش شهری.',
+      source:'برنامه پیشنهادی',
+      status:'پیشنهادی'
+    }
+  ],
+
+  azar:[
+    {
+      title:'ابیانه و نطنز',
+      date:'آذر ۱۴۰۵',
+      type:'سفر یک‌روزه',
+      venue:'نطنز و ابیانه',
+      desc:'ترکیب طبیعت و معماری تاریخی.',
+      source:'برنامه پیشنهادی',
+      status:'پیشنهادی'
+    },
+    {
+      title:'قم',
+      date:'آذر ۱۴۰۵',
+      type:'سفر یک‌روزه',
+      venue:'قم',
+      desc:'گردش شهری و بازدید از جاذبه‌های تاریخی.',
+      source:'برنامه پیشنهادی',
+      status:'پیشنهادی'
+    }
+  ]
+};
+
+
+const routeInfo={
+  mehr:[
+    'تهران → طالقان',
+    'تهران → ابیانه',
+    'تهران → دماوند',
+    'تهران → فیروزکوه'
+  ],
+  aban:[
+    'تهران → ماسال',
+    'تهران → قزوین',
+    'تهران → کاشان',
+    'تهران → رامسر'
+  ],
+  azar:[
+    'تهران → سمنان',
+    'تهران → گرمسار',
+    'تهران → کاشان',
+    'تهران → کرج → جاده چالوس'
+  ]
+};
+
+
+function escapeHtml(value){
+  return String(value ?? '')
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#039;');
+}
+
+
+function toggle(button){
+  button.classList.toggle('ok');
+
+  if(button.classList.contains('ok')){
+    button.textContent='✓ تأیید شد';
+  }else{
+    button.textContent='تأیید';
+  }
+}
+
+
+function travelCard(x){
+  return `
+    <article class="card travel">
+      <span class="kind">${escapeHtml(x.type)}</span>
+
+      <h3>${escapeHtml(x.title)}</h3>
+
+      <div class="meta">🗓 تاریخ: ${escapeHtml(x.date)}</div>
+
+      <div class="meta">📍 مقصد: ${escapeHtml(x.venue)}</div>
+
+      <p class="desc">${escapeHtml(x.desc)}</p>
+
+      <div class="source">
+        منبع/وضعیت: ${escapeHtml(x.source)} · ${escapeHtml(x.status)}
+      </div>
+
+      <div class="actions">
+        <button class="approve" onclick="toggle(this)">تأیید</button>
+      </div>
+    </article>
+  `;
+}
+
+
+function eventCard(x,month='',cat=''){
+
+  const cls=
+    cat==='نمایشگاه‌ها'?'exhibition':
+    cat==='موسیقی'?'music':
+    cat==='تئاتر'?'theater':
+    cat==='گالری و هنرهای تجسمی'?'gallery':
+    'special';
+
+  const source=x[5] || '';
+  const hasLink=
+    typeof source==='string' &&
+    (source.startsWith('http://') || source.startsWith('https://'));
+
+  return `
+    <article class="card event ${cls}">
+
+      <span class="kind">${escapeHtml(x[2] || 'رویداد')}</span>
+
+      <h3>${escapeHtml(x[0] || '')}</h3>
+
+      ${month
+        ? `<div class="meta">🗓 ماه: ${escapeHtml(month)}</div>`
+        : ''
+      }
+
+      <div class="meta">
+        📅 تاریخ: ${escapeHtml(x[1] || 'نامشخص')}
+      </div>
+
+      <div class="meta">
+        📍 محل: ${escapeHtml(x[3] || 'نامشخص')}
+      </div>
+
+      <p class="desc">
+        ${escapeHtml(x[4] || '')}
+      </p>
+
+      <div class="source">
+        ${
+          hasLink
+          ? `منبع:
+              <a href="${escapeHtml(source)}"
+                 target="_blank"
+                 rel="noopener noreferrer">
+                 مشاهده منبع
+              </a>`
+          : `منبع/وضعیت: ${escapeHtml(source)} · ${escapeHtml(x[6] || '')}`
+        }
+      </div>
+
+      <div class="actions">
+        <button class="approve" onclick="toggle(this)">تأیید</button>
+      </div>
+
+    </article>
+  `;
+}
+
+
+function renderTravel(month){
+
+  const container=document.getElementById('content');
+
+  const main=travel[month] || [];
+  const extra=travelExtra[month] || [];
+
+  const allTravel=[...main,...extra];
+
+  const cards=allTravel
+    .map(item=>travelCard(item))
+    .join('');
+
+  const routes=(routeInfo[month] || [])
+    .map(route=>`<li>${escapeHtml(route)}</li>`)
+    .join('');
+
+  container.innerHTML=`
+    <section class="section">
+
+      <h2>سفرهای پیشنهادی ${month==='mehr'?'مهر':month==='aban'?'آبان':'آذر'}</h2>
+
+      <div class="grid">
+        ${cards}
+      </div>
+
+      <div class="route">
+
+        <strong>مسیرهای پیشنهادی:</strong>
+
+        <ul>
+          ${routes}
+        </ul>
+
+      </div>
+
+    </section>
+  `;
+}
+
+
+function renderEvents(month){
+
+  const container=document.getElementById('content');
+
+  const monthEvents=events[month] || {};
+
+  let html='';
+
+  Object.keys(monthEvents).forEach(category=>{
+
+    const items=monthEvents[category] || [];
+
+    if(!items.length)return;
+
+    html+=`
+      <section class="section">
+
+        <h2>${escapeHtml(category)}</h2>
+
+        <div class="grid">
+          ${items.map(item=>eventCard(
+            item,
+            month==='mehr'?'مهر':
+            month==='aban'?'آبان':'آذر',
+            category
+          )).join('')}
+        </div>
+
+      </section>
+    `;
+  });
+
+  if(!html){
+    html=`
+      <section class="section">
+        <div class="card">
+          هنوز رویداد آنلاینی برای این ماه دریافت نشده است.
+        </div>
+      </section>
+    `;
+  }
+
+  container.innerHTML=html;
+}
+
+
+function render(){
+
+  const month=
+    window.currentMonth || 'mehr';
+
+  const container=document.getElementById('content');
+
+  const travelMain=travel[month] || [];
+  const travelAdd=travelExtra[month] || [];
+  const allTravel=[...travelMain,...travelAdd];
+
+  let html=`
+
+    <section class="section">
+
+      <h2>
+        سفرهای پیشنهادی
+        ${
+          month==='mehr'
+          ? 'مهر'
+          : month==='aban'
+          ? 'آبان'
+          : 'آذر'
+        }
+      </h2>
+
+      <div class="grid">
+
+        ${allTravel
+          .map(item=>travelCard(item))
+          .join('')
+        }
+
+      </div>
+
+    </section>
+  `;
+
+
+  const monthEvents=events[month] || {};
+
+  Object.keys(monthEvents).forEach(category=>{
+
+    const items=monthEvents[category] || [];
+
+    if(!items.length)return;
+
+    html+=`
+
+      <section class="section">
+
+        <h2>${escapeHtml(category)}</h2>
+
+        <div class="grid">
+
+          ${items
+            .map(item=>eventCard(
+              item,
+              month==='mehr'
+              ? 'مهر'
+              : month==='aban'
+              ? 'آبان'
+              : 'آذر',
+              category
+            ))
+            .join('')
+          }
+
+        </div>
+
+      </section>
+
+    `;
+  });
+
+
+  html+=`
+
+    <section class="section">
+
+      <div class="route">
+
+        <strong>مسیرهای پیشنهادی:</strong>
+
+        <ul>
+          ${
+            (routeInfo[month] || [])
+            .map(route=>`<li>${escapeHtml(route)}</li>`)
+            .join('')
+          }
+        </ul>
+
+      </div>
+
+    </section>
+
+  `;
+
+
+  container.innerHTML=html;
+}
+
+
+function renderAll(){
+
+  const container=document.getElementById('content');
+
+  const months=[
+    ['mehr','مهر'],
+    ['aban','آبان'],
+    ['azar','آذر']
+  ];
+
+  let html='';
+
+  months.forEach(([key,label])=>{
+
+    html+=`
+
+      <section class="section">
+
+        <h2>${label}</h2>
+
+        <h3>سفرها</h3>
+
+        <div class="grid">
+
+          ${
+            [
+              ...(travel[key] || []),
+              ...(travelExtra[key] || [])
+            ]
+            .map(item=>travelCard(item))
+            .join('')
+          }
+
+        </div>
+
+    `;
+
+
+    const monthEvents=events[key] || {};
+
+    Object.keys(monthEvents).forEach(category=>{
+
+      const items=monthEvents[category] || [];
+
+      if(!items.length)return;
+
+      html+=`
+
+        <h3>${escapeHtml(category)}</h3>
+
+        <div class="grid">
+
+          ${
+            items
+            .map(item=>eventCard(
+              item,
+              label,
+              category
+            ))
+            .join('')
+          }
+
+        </div>
+
+      `;
     });
 
-    if (!response.ok) {
-      throw new Error('HTTP ' + response.status);
+
+    html+=`</section>`;
+  });
+
+
+  container.innerHTML=html;
+}
+
+
+function showMonth(month,button){
+
+  window.currentMonth=month;
+
+  document
+    .querySelectorAll('.tab')
+    .forEach(tab=>tab.classList.remove('active'));
+
+  if(button){
+    button.classList.add('active');
+  }
+
+  render();
+}
+
+
+function showAll(button){
+
+  document
+    .querySelectorAll('.tab')
+    .forEach(tab=>tab.classList.remove('active'));
+
+  if(button){
+    button.classList.add('active');
+  }
+
+  renderAll();
+}
+
+
+window.currentMonth='mehr';
+async function updateInfo(){
+
+  const last=document.getElementById('last');
+  const state=document.getElementById('updateState');
+
+  state.className='update-state';
+  state.textContent='در حال بررسی اطلاعات آنلاین…';
+
+  try{
+
+    const response=await fetch(
+      './data/events.json?t='+Date.now(),
+      {
+        cache:'no-store'
+      }
+    );
+
+    if(!response.ok){
+      throw new Error('HTTP '+response.status);
     }
 
-    const data = await response.json();
+    const data=await response.json();
 
-    if (data.events) {
-      const dynamicEvents = {};
 
-      Object.values(data.events).forEach(item => {
-        const title = item.title || '';
-        const link = item.link || '';
-        const date = item.date || '';
+    if(data.events){
 
-        let category = 'رویدادهای خاص';
+      const dynamicEvents={};
 
-        if (
+      Object.values(data.events).forEach(item=>{
+
+        const title=item.title || '';
+        const link=item.link || '';
+        const date=item.date || '';
+
+        let category='رویدادهای خاص';
+
+
+        if(
           title.includes('کنسرت') ||
           title.includes('موسیقی') ||
           title.includes('خواننده') ||
           title.includes('ارکستر')
-        ) {
-          category = 'موسیقی';
-        } else if (
+        ){
+
+          category='موسیقی';
+
+        }else if(
           title.includes('تئاتر') ||
           title.includes('نمایش')
-        ) {
-          category = 'تئاتر';
-        } else if (
+        ){
+
+          category='تئاتر';
+
+        }else if(
           title.includes('نمایشگاه') ||
           title.includes('گالری') ||
           title.includes('هنر')
-        ) {
-          category = 'نمایشگاه‌ها';
+        ){
+
+          category='نمایشگاه‌ها';
+
         }
 
-        if (!dynamicEvents[category]) {
-          dynamicEvents[category] = [];
+
+        if(!dynamicEvents[category]){
+          dynamicEvents[category]=[];
         }
+
 
         dynamicEvents[category].push([
+
           title,
+
           date,
-          category === 'موسیقی'
+
+          category==='موسیقی'
             ? 'موسیقی'
-            : category === 'تئاتر'
+            : category==='تئاتر'
             ? 'تئاتر'
-            : category === 'نمایشگاه‌ها'
+            : category==='نمایشگاه‌ها'
             ? 'نمایشگاه هنری'
             : 'رویداد',
+
           'اطلاعات آنلاین',
+
           'رویداد دریافت‌شده از منبع آنلاین',
+
           link,
+
           'به‌روزرسانی خودکار'
+
         ]);
+
       });
 
-      if (Object.keys(dynamicEvents).length > 0) {
-        events.mehr['رویدادهای آنلاین'] = [];
 
-        Object.values(dynamicEvents).forEach(items => {
-          items.forEach(item => {
+      /*
+       * رویدادهای دریافت‌شده از GitHub
+       * در دسته جداگانه قرار می‌گیرند تا
+       * اطلاعات قبلی سایت حذف نشوند.
+       */
+
+      if(Object.keys(dynamicEvents).length>0){
+
+        events.mehr['رویدادهای آنلاین']=[];
+
+        Object.values(dynamicEvents).forEach(items=>{
+
+          items.forEach(item=>{
+
             events.mehr['رویدادهای آنلاین'].push(item);
+
           });
+
         });
+
       }
 
+
       render();
-      renderAll();
+
     }
 
-    const updateDate = data.updated_at
+
+    const updateDate=data.updated_at
       ? new Date(data.updated_at)
       : new Date();
 
-    last.textContent =
-      'آخرین به‌روزرسانی: ' +
-      new Intl.DateTimeFormat('fa-IR', {
-        dateStyle: 'full',
-        timeStyle: 'short'
-      }).format(updateDate);
+
+    last.textContent=
+      'آخرین به‌روزرسانی: '+
+      new Intl.DateTimeFormat(
+        'fa-IR',
+        {
+          dateStyle:'full',
+          timeStyle:'short'
+        }
+      ).format(updateDate);
+
 
     state.classList.add('update-online');
-    state.textContent =
+
+    state.textContent=
       'اطلاعات آنلاین با موفقیت دریافت و اعمال شد.';
-  } catch (error) {
+
+
+  }catch(error){
+
     console.error(error);
 
     state.classList.add('update-error');
-    state.textContent =
+
+    state.textContent=
       'دریافت اطلاعات آنلاین ناموفق بود؛ اطلاعات فعلی حفظ شد.';
+
   }
+
 }
+
+
+render();
+  </script>
+
+</body>
+</html>
